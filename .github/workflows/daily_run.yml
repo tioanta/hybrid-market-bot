@@ -3,7 +3,7 @@ name: Hybrid Market Bot
 on:
   schedule:
     # 02:00 UTC = 09:00 WIB
-    - cron: '0 2 * * *'
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:
