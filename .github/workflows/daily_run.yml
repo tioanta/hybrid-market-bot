@@ -1,0 +1,41 @@
+name: Hybrid Market Bot
+
+on:
+  schedule:
+    # 02:00 UTC = 09:00 WIB
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          # Download corpus untuk TextBlob (agar sentimen analisis jalan)
+          python -m textblob.download_corpora
+
+      - name: Run Hybrid Bot
+        env:
+          IG_USERNAME: ${{ secrets.IG_USERNAME }}
+          IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
+          IG_SESSION_ID: ${{ secrets.IG_SESSION_ID }}
+        run: python main.py
+
+      - name: Upload Image Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: market-forecast-image
+          path: market_forecast.png
+          retention-days: 1
